@@ -18,8 +18,6 @@ app.get("/api/scribe-token", async (req, res) => {
         "xi-api-key": process.env.ELEVENLABS_API_KEY,
         "Content-Type": "application/json"
       },
-      // optionally add a short body to scope token if docs support scoping
-      // body: JSON.stringify({ /* optional */ })
     });
 
     if (!response.ok) {
