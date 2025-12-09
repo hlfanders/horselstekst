@@ -12,7 +12,9 @@ app.use(express.json());
 function isAuthorized(req) {
   return true;
 }
-
+app.get("/", (req, res) => {
+  res.send("Tjenesten er oppe og går!");
+});
 app.get("/api/scribe-token", async (req, res) => {
   if (!isAuthorized(req)) return res.status(401).json({ error: "Unauthorized" });
 
