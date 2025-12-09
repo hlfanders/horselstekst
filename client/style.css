@@ -1,0 +1,21 @@
+body {
+  font-family: sans-serif;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+#recordBtn {
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#output {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  min-height: 150px;
+  background: #f9f9f9;
+  white-space: pre-wrap;
+}
