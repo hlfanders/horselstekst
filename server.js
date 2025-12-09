@@ -5,36 +5,38 @@ import cors from "cors";
 
 dotenv.config();
 const app = express();
-
-app.use(cors());               // allow WordPress domain
+app.use(cors({ origin: true }));
 app.use(express.json());
 
-function isAuthorized(req) {
-  return true;
-}
-app.get("/", (req, res) => {
-  res.send("Tjenesten er oppe og går!");
-});
-app.get("/api/scribe-token", async (req, res) => {
-  if (!isAuthorized(req)) return res.status(401).json({ error: "Unauthorized" });
+app.get("/", (req, res) => res.send("Token issuer is running"));
 
+app.get("/api/scribe-token", async (req, res) => {
   try {
-    const r = await fetch("https://api.elevenlabs.io/v1/single-use-token/realtime_scribe", {
+    const response = await fetch("https://api.elevenlabs.io/v1/single-use-token/realtime_scribe", {
       method: "POST",
       headers: {
         "xi-api-key": process.env.ELEVENLABS_API_KEY,
         "Content-Type": "application/json"
-      }
+      },
+      // optionally add a short body to scope token if docs support scoping
+      // body: JSON.stringify({ /* optional */ })
     });
 
-    const data = await r.json();
-    res.json(data);  // { token: "..." }
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("ElevenLabs token create failed:", response.status, text);
+      return res.status(502).json({ error: "eleven_token_failed", detail: text });
+    }
 
+    const data = await response.json();
+    // data contains { token: "..." }
+    return res.json({ token: data.token });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "token_error", details: err.message });
+    console.error("Token endpoint error:", err);
+    return res.status(500).json({ error: "server_error", detail: String(err) });
   }
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log("Backend running on " + PORT));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
